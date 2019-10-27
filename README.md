@@ -76,18 +76,69 @@ En estos tres casos, es necesario realizar operaciones adicionales basadas en el
 #### Comparación con otros métodos:
 
 **Método de rechazo**: La idea es simple y fácil de implementar, pero puede ser muy ineficiente por dos motivos:
-> 1. Se rechaza una gran proporción de muestras.  
+1. Se rechaza una gran proporción de muestras.  
 2. Se debe evaluar f(x) para cada punto candidato, lo cual es computacionalmente costoso para muchas funciones de distribución de probabilidad.
 
+**Método de inversión**: Es más complejo, usando directamente la función inversa de la función de distribución acumulativa (FDA) para generar números aleatorios. Además el cálculo implica una función de error más compleja que puede ser no primaria.
+
+**Box-Muller**: Ha sido un algoritmo muy utilizado para generar números aleatorios durante mucho tiempo. El algoritmo Box-Muller se caracteriza por una alta eficiencia y un proceso de cálculo relativamente simple (solo se utilizan funciones elementales), que requieren al menos un logaritmo y un cálculo de raíz cuadrada para los valores generados.
+
+**El algoritmo de Ziggurat**: Es muy eficiente y utilizado por muchos lenguajes de programación modernos. El algoritmo de Ziggurat es en realidad una versión mejorada del método de rechazo. Solo requiere generar aleatoriamente un entero y un real, seguido por una comparación, una operación de multiplicación y una búsqueda en una tabla para obtener un número aleatorio que obedezca a la distribución normal. En todo el proceso, no hay operaciones complicadas, como raíces cuadradas, logaritmos o funciones trigonométricas, al menos en la mayoría de los casos. Sin embargo, dado que el algoritmo de Ziggurat es más complejo de implementar, es mejor usarlo cuando se requieren grandes cantidades de números aleatorios.
 
 
 
+#### Creación de la tabla la distribución normal estándar
+
+Utilizando el algoritmo	de Ziggurat obtener	una	aproximación de	la tabla de	la tabla de	la distribución normal estándar.	
+
+Para poder entender de dónde provienen los valores de la tabla, es importante saber acerca de la función de densidad de probabilidad (FDP). Se utiliza esta FDP para especificar la probabilidad de que una variable aleatoria caiga dentro de un rango particular de valores, en lugar de tomar cualquier valor. Esta probabilidad viene dada por la integral de la FDP de la variable sobre el rango. La siguiente ecuación es la función de densidad de probabilidad para una distribución normal $N(μ,σ^2)$.
+ $f(x|\mu,\sigma^2) = \frac{1}{ \sqrt{(2 \pi \sigma^2}} \, e^{-\frac{(x-\mu^2)}{2 \sigma^2}}$ 
+ 
+ La cual podemos simplificar tomando la distribución normal estándar de media (μ) 0 y desviación estándar (σ) 1.
+ $f(x) = \frac{1}{ \sqrt{(2 \pi}} \, e^{-\frac{(x^2)}{2}}$
 
 
 ```python
 def pdf_standard_normal_distribution(x):
     return (1 / (np.sqrt(2 * np.pi))) * np.exp((x ** 2) / -2)
 ```
+
+
+```python
+DOMAIN = 5
+N = 100
+TITLE_SIZE = 30
+FIGURE_SIZE = (20, 10)
+
+domain = np.linspace(-DOMAIN, DOMAIN, N) # return a domain from [0, 1] in 100 parts
+
+fig, ax = plt.subplots(figsize=(FIGURE_SIZE[0], FIGURE_SIZE[1]));
+
+# config
+ax.set_title('Normal Distribution', size = TITLE_SIZE);
+ax.set_ylabel('Probability Density', size = TITLE_SIZE);
+
+ax.plot(domain, list( # domain is the x axis and the rest y axis
+    map(
+        lambda x: pdf_standard_normal_distribution(x), 
+        domain
+    )
+), color = 'b')
+
+plt.show()
+```
+
+
+![png](images/output_12_0.png)
+
+
+La tabla de la normal estándar contiene los datos de la probabilidad de un evento dentro del intervalo $[0, z]$, es decir, el área bajo la curva normal estándar entre $0$ y $z$. El gráfico anterior no muestra la probabilidad de eventos, sino su densidad de probabilidad. Para encontrar el área, necesita integrarse. La integración del FDP proporciona una función de distribución acumulativa (FDA), que asigna valores a su rango de percentil en una distribución. Los valores de la tabla se calculan utilizando la función de distribución acumulativa de una distribución normal estándar con media 0 y desviación estándar 1. Esto se puede denotar con la siguiente ecuación.  
+  
+$\int_{0}^{z}{\frac{1}{2\pi}}e^{\frac{-x^2}{2}}dx$
+
+En esta práctica vamos a utilizar el algoritmo de Ziggurat para crear la tabla. El primer paso es generar $n$ números aleatorios según la distribución normal utilizando el algoritmo. En nuestro caso, generamos 10000, cambiamos su signo aleatoriamente y los truncamos a 2 decimales. Después, establecemos un contador para calcular la acumulación de cada valor del número aleatorio y lo normalizamos. De esta manera, obtenemos la frecuencia de cada valor, la cual usamos como aproximación del valor correspondiente de la función de densidad. 
+
+Con el objetivo de obtener la probabilidad acumulada dentro de un rango desde 0 hasta un valor $z$ del numero aleatorio, se suman todas las frecuencias calculadas de los valores de los números menores que $z$. En esta práctica, se han generado las 10 primeras filas de la tabla, es decir, se han calculado las probabilidades acumuladas de los valores $z$ desde 0 hasta 0.99. No se muestran las probabilidades para los $z$ negativos ya que $F(-z)=1-F(z)$.
 
 
 ```python
@@ -130,41 +181,7 @@ plt.close()
 ```
 
 
-![png](images/output_11_0.png)
-
-
-## Esto es con negrita
-Explicaciones
-
-Utilizando el algoritmo	de Ziggurat obtener	una	aproximación de	la tabla de	la tabla de	la distribución normal estándar.	
-
-
-```python
-DOMAIN = 5
-N = 100
-TITLE_SIZE = 30
-FIGURE_SIZE = (20, 10)
-
-domain = np.linspace(-DOMAIN, DOMAIN, N) # return a domain from [0, 1] in 100 parts
-
-fig, ax = plt.subplots(figsize=(FIGURE_SIZE[0], FIGURE_SIZE[1]));
-
-# config
-ax.set_title('Normal Distribution', size = TITLE_SIZE);
-ax.set_ylabel('Probability Density', size = TITLE_SIZE);
-
-ax.plot(domain, list( # domain is the x axis and the rest y axis
-    map(
-        lambda x: pdf_standard_normal_distribution(x), 
-        domain
-    )
-), color = 'b')
-
-plt.show()
-```
-
-
-![png](images/output_14_0.png)
+![png](images/output_15_0.png)
 
 
 
@@ -185,7 +202,7 @@ plt.show()
 ```
 
 
-![png](images/output_15_0.png)
+![png](images/output_16_0.png)
 
 
 
@@ -211,7 +228,7 @@ plt.show()
 ```
 
 
-![png](images/output_16_0.png)
+![png](images/output_17_0.png)
 
 
 
@@ -273,133 +290,133 @@ standard_normal_table
   <tbody>
     <tr>
       <th>0.0</th>
-      <td>0.4966</td>
-      <td>0.5003</td>
-      <td>0.5048</td>
-      <td>0.5087</td>
-      <td>0.5128</td>
-      <td>0.5164</td>
-      <td>0.5202</td>
-      <td>0.5242</td>
-      <td>0.5278</td>
-      <td>0.5321</td>
+      <td>0.496</td>
+      <td>0.501</td>
+      <td>0.5051</td>
+      <td>0.5088</td>
+      <td>0.5124</td>
+      <td>0.5168</td>
+      <td>0.5216</td>
+      <td>0.5251</td>
+      <td>0.5294</td>
+      <td>0.533</td>
     </tr>
     <tr>
       <th>0.1</th>
-      <td>0.5362</td>
-      <td>0.54</td>
-      <td>0.5449</td>
-      <td>0.5482</td>
-      <td>0.5524</td>
-      <td>0.5581</td>
-      <td>0.5614</td>
-      <td>0.5651</td>
-      <td>0.5696</td>
-      <td>0.5743</td>
+      <td>0.5365</td>
+      <td>0.5402</td>
+      <td>0.5452</td>
+      <td>0.5493</td>
+      <td>0.5528</td>
+      <td>0.5565</td>
+      <td>0.5602</td>
+      <td>0.564</td>
+      <td>0.5677</td>
+      <td>0.5718</td>
     </tr>
     <tr>
       <th>0.2</th>
-      <td>0.578</td>
-      <td>0.5816</td>
-      <td>0.5854</td>
-      <td>0.5889</td>
-      <td>0.5935</td>
-      <td>0.5977</td>
-      <td>0.6022</td>
-      <td>0.6071</td>
-      <td>0.6113</td>
-      <td>0.6151</td>
+      <td>0.5763</td>
+      <td>0.5805</td>
+      <td>0.5839</td>
+      <td>0.5883</td>
+      <td>0.5933</td>
+      <td>0.5971</td>
+      <td>0.6003</td>
+      <td>0.6042</td>
+      <td>0.6078</td>
+      <td>0.6121</td>
     </tr>
     <tr>
       <th>0.3</th>
-      <td>0.6201</td>
-      <td>0.6242</td>
-      <td>0.6269</td>
-      <td>0.6296</td>
-      <td>0.6334</td>
-      <td>0.6373</td>
-      <td>0.6412</td>
-      <td>0.6447</td>
-      <td>0.6481</td>
-      <td>0.652</td>
+      <td>0.6153</td>
+      <td>0.6184</td>
+      <td>0.6221</td>
+      <td>0.6258</td>
+      <td>0.6288</td>
+      <td>0.6335</td>
+      <td>0.6366</td>
+      <td>0.6395</td>
+      <td>0.6443</td>
+      <td>0.648</td>
     </tr>
     <tr>
       <th>0.4</th>
-      <td>0.6565</td>
-      <td>0.6596</td>
-      <td>0.6637</td>
-      <td>0.6664</td>
-      <td>0.6704</td>
-      <td>0.6745</td>
-      <td>0.6774</td>
-      <td>0.6819</td>
-      <td>0.6852</td>
-      <td>0.689</td>
+      <td>0.6513</td>
+      <td>0.6547</td>
+      <td>0.658</td>
+      <td>0.6611</td>
+      <td>0.6651</td>
+      <td>0.6688</td>
+      <td>0.6725</td>
+      <td>0.6771</td>
+      <td>0.6809</td>
+      <td>0.6844</td>
     </tr>
     <tr>
       <th>0.5</th>
-      <td>0.6928</td>
-      <td>0.6978</td>
-      <td>0.7001</td>
-      <td>0.7034</td>
+      <td>0.6878</td>
+      <td>0.6916</td>
+      <td>0.6951</td>
+      <td>0.6984</td>
+      <td>0.7015</td>
+      <td>0.705</td>
       <td>0.7079</td>
-      <td>0.7124</td>
+      <td>0.712</td>
       <td>0.7162</td>
-      <td>0.7202</td>
-      <td>0.7229</td>
-      <td>0.7263</td>
+      <td>0.7199</td>
     </tr>
     <tr>
       <th>0.6</th>
-      <td>0.7306</td>
-      <td>0.7336</td>
-      <td>0.7372</td>
+      <td>0.7228</td>
+      <td>0.7261</td>
+      <td>0.7298</td>
+      <td>0.7331</td>
+      <td>0.7364</td>
       <td>0.7402</td>
-      <td>0.744</td>
-      <td>0.7465</td>
-      <td>0.749</td>
-      <td>0.7521</td>
-      <td>0.7562</td>
-      <td>0.7585</td>
+      <td>0.7433</td>
+      <td>0.7459</td>
+      <td>0.7484</td>
+      <td>0.751</td>
     </tr>
     <tr>
       <th>0.7</th>
-      <td>0.7616</td>
-      <td>0.7647</td>
-      <td>0.7673</td>
-      <td>0.7701</td>
-      <td>0.7742</td>
-      <td>0.777</td>
-      <td>0.7802</td>
-      <td>0.7835</td>
-      <td>0.787</td>
-      <td>0.7906</td>
+      <td>0.7538</td>
+      <td>0.758</td>
+      <td>0.7601</td>
+      <td>0.763</td>
+      <td>0.7658</td>
+      <td>0.7682</td>
+      <td>0.7723</td>
+      <td>0.7758</td>
+      <td>0.7792</td>
+      <td>0.7817</td>
     </tr>
     <tr>
       <th>0.8</th>
-      <td>0.7935</td>
-      <td>0.7966</td>
-      <td>0.8</td>
+      <td>0.7839</td>
+      <td>0.7878</td>
+      <td>0.7916</td>
+      <td>0.7949</td>
+      <td>0.7974</td>
+      <td>0.7998</td>
       <td>0.8023</td>
       <td>0.8054</td>
-      <td>0.8082</td>
-      <td>0.8113</td>
-      <td>0.8144</td>
-      <td>0.8167</td>
-      <td>0.8196</td>
+      <td>0.8084</td>
+      <td>0.8112</td>
     </tr>
     <tr>
       <th>0.9</th>
-      <td>0.8224</td>
-      <td>0.8246</td>
-      <td>0.8272</td>
-      <td>0.8305</td>
-      <td>0.832</td>
-      <td>0.834</td>
-      <td>0.8363</td>
-      <td>0.8382</td>
-      <td>0.8406</td>
-      <td>0.8434</td>
+      <td>0.8134</td>
+      <td>0.8153</td>
+      <td>0.8176</td>
+      <td>0.8206</td>
+      <td>0.8232</td>
+      <td>0.8256</td>
+      <td>0.8289</td>
+      <td>0.8319</td>
+      <td>0.8351</td>
+      <td>0.8372</td>
     </tr>
   </tbody>
 </table>
@@ -435,7 +452,7 @@ plt.show()
 ```
 
 
-![png](images/output_20_0.png)
+![png](images/output_21_0.png)
 
 
 El petrolero llega hasta la entrada del puerto, y espera a que un remolcador 
@@ -465,6 +482,21 @@ máximo de barcos esperando a atracar.
 B. Analice la posibilidad de disponer de 3 nuevos remolcadores y 
 realizar obras para disponer de 5 nuevos muelles ¿cuál de las dos 
 opciones es mejor?
+
+
+```python
+
+```
+
+
+```python
+
+```
+
+### Referencia
+
+Marsaglia, G., & Tsang, W. W. (2000). The ziggurat method for generating random variables. Journal of statistical software, 5(8), 1-7.  
+https://towardsdatascience.com/how-to-use-and-create-a-z-table-standard-normal-table-240e21f36e53 
 
 
 ```python
