@@ -129,7 +129,7 @@ plt.show()
 ```
 
 
-![png](output_12_0.png)
+![png](images/output_12_0.png)
 
 
 La tabla de la normal estándar contiene los datos de la probabilidad de un evento dentro del intervalo $[0, z]$, es decir, el área bajo la curva normal estándar entre $0$ y $z$. El gráfico anterior no muestra la probabilidad de eventos, sino su densidad de probabilidad. Para encontrar el área, necesita integrarse. La integración del FDP proporciona una función de distribución acumulativa (FDA), que asigna valores a su rango de percentil en una distribución. Los valores de la tabla se calculan utilizando la función de distribución acumulativa de una distribución normal estándar con media 0 y desviación estándar 1. Esto se puede denotar con la siguiente ecuación.  
@@ -181,7 +181,7 @@ plt.close()
 ```
 
 
-![png](output_15_0.png)
+![png](images/output_15_0.png)
 
 
 
@@ -202,7 +202,7 @@ plt.show()
 ```
 
 
-![png](output_16_0.png)
+![png](images/output_16_0.png)
 
 
 
@@ -228,7 +228,7 @@ plt.show()
 ```
 
 
-![png](output_17_0.png)
+![png](images/output_17_0.png)
 
 
 
@@ -452,7 +452,7 @@ plt.show()
 ```
 
 
-![png](output_21_0.png)
+![png](images/output_21_0.png)
 
 
 El petrolero llega hasta la entrada del puerto, y espera a que un remolcador 
