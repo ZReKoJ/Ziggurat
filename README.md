@@ -19,6 +19,13 @@ import pandas as pd
 from IPython.display import Image
 
 import zignor
+
+import random
+from scipy import stats
+from scipy.stats import poisson, norm, chi2, expon, uniform
+from enum import Enum
+
+import logging
 ```
 
 ### 1. Generación de números y variables aleatorias
@@ -28,7 +35,7 @@ El **algoritmo de Ziggurat** es un método para generar valores aleatorios a par
 
 Su nombre proviene de unos templos construidos en la antigua Mesopotamia. Durante el algoritmo, se genera un conjunto de rectángulos "*apilados*" que recordaron a su autor a esta estructura.
 
-<img src="images/ziggurat.png" width="300" height="300">
+<img src="docs/images/ziggurat.png" width="300" height="300">
 
 Este algoritmo está basado el método de rechazo:  
 
@@ -36,7 +43,7 @@ Este algoritmo está basado el método de rechazo:
 
 La eficiencia de este método suele ser baja porque muchos puntos generados acaban siendo descartados.
 
-<img src="images/1.png" width="300" height="300">
+<img src="docs/images/1.png" width="300" height="300">
 
 Si pudiéramos modificar el área de generación de puntos de forma que sea lo más parecida posible, y esta es la idea básica del algoritmo de Ziggurat. Específicamente, el algoritmo de Ziggurat funciona de la siguiente manera:
 
@@ -46,7 +53,7 @@ Si pudiéramos modificar el área de generación de puntos de forma que sea lo m
 
 > En la figura 2, se toma $n=8$, pero en la práctica n puede alcanzar 64, 128 o 256. Llamamos a la parte que se superpone al rectángulo superior en la dirección de la longitud región central del rectángulo actual. El rectángulo superior no tiene región central. 
 
-<img src="images/2.png" width="300" height="300">
+<img src="docs/images/2.png" width="300" height="300">
 
 **Inicialización**
 
@@ -218,11 +225,20 @@ for rand in random_numbers:
     counter[round_rand_number] = counter.get(round_rand_number, 0) + 1
     
 x_axis = sorted(list(counter.keys()))
-y_axis = list(map(lambda x : counter[x], x_axis))
+y_axis = list(map(lambda x : counter[x] / N * 100, x_axis))
 
-fig, ax = plt.subplots(figsize=(FIGURE_SIZE[0], FIGURE_SIZE[1]));
+domain = np.linspace(-max(x_axis), max(x_axis), N)
+
+fig, ax = plt.subplots(figsize = (FIGURE_SIZE[0], FIGURE_SIZE[1]));
 
 ax.plot(x_axis, y_axis, color = 'b')
+
+ax.plot(domain, list( # domain is the x axis and the rest y axis
+    map(
+        lambda x: pdf_standard_normal_distribution(x), 
+        domain
+    )
+), color = 'r', linewidth = 5)
 
 plt.show()
 ```
@@ -246,7 +262,7 @@ for index in standard_normal_table.index:
         for k in np.round(np.arange(min( random_numbers ), z, .01), 2):
             if counter.get( k ) is not None:
                 value = value + counter.get(k)
-        standard_normal_table.loc[index, column] = value/N
+        standard_normal_table.loc[index, column] = value / N
         
 standard_normal_table.index = standard_normal_table.index.astype(str)
 standard_normal_table.columns = [str(column).ljust(4, '0') for column in standard_normal_table.columns]
@@ -290,133 +306,133 @@ standard_normal_table
   <tbody>
     <tr>
       <th>0.0</th>
-      <td>0.496</td>
       <td>0.501</td>
-      <td>0.5051</td>
-      <td>0.5088</td>
-      <td>0.5124</td>
-      <td>0.5168</td>
-      <td>0.5216</td>
-      <td>0.5251</td>
-      <td>0.5294</td>
-      <td>0.533</td>
+      <td>0.5053</td>
+      <td>0.5085</td>
+      <td>0.5128</td>
+      <td>0.5169</td>
+      <td>0.5204</td>
+      <td>0.5235</td>
+      <td>0.5272</td>
+      <td>0.5327</td>
+      <td>0.5364</td>
     </tr>
     <tr>
       <th>0.1</th>
-      <td>0.5365</td>
-      <td>0.5402</td>
-      <td>0.5452</td>
-      <td>0.5493</td>
-      <td>0.5528</td>
-      <td>0.5565</td>
-      <td>0.5602</td>
-      <td>0.564</td>
-      <td>0.5677</td>
-      <td>0.5718</td>
+      <td>0.541</td>
+      <td>0.5442</td>
+      <td>0.548</td>
+      <td>0.5514</td>
+      <td>0.5551</td>
+      <td>0.5593</td>
+      <td>0.5615</td>
+      <td>0.5657</td>
+      <td>0.5691</td>
+      <td>0.5744</td>
     </tr>
     <tr>
       <th>0.2</th>
-      <td>0.5763</td>
-      <td>0.5805</td>
-      <td>0.5839</td>
+      <td>0.5775</td>
+      <td>0.581</td>
+      <td>0.5846</td>
       <td>0.5883</td>
-      <td>0.5933</td>
-      <td>0.5971</td>
-      <td>0.6003</td>
-      <td>0.6042</td>
-      <td>0.6078</td>
-      <td>0.6121</td>
+      <td>0.593</td>
+      <td>0.5983</td>
+      <td>0.6021</td>
+      <td>0.6062</td>
+      <td>0.6104</td>
+      <td>0.615</td>
     </tr>
     <tr>
       <th>0.3</th>
-      <td>0.6153</td>
-      <td>0.6184</td>
-      <td>0.6221</td>
-      <td>0.6258</td>
-      <td>0.6288</td>
-      <td>0.6335</td>
-      <td>0.6366</td>
-      <td>0.6395</td>
-      <td>0.6443</td>
-      <td>0.648</td>
+      <td>0.619</td>
+      <td>0.622</td>
+      <td>0.6268</td>
+      <td>0.6299</td>
+      <td>0.6341</td>
+      <td>0.6382</td>
+      <td>0.6416</td>
+      <td>0.6454</td>
+      <td>0.6483</td>
+      <td>0.6529</td>
     </tr>
     <tr>
       <th>0.4</th>
-      <td>0.6513</td>
-      <td>0.6547</td>
-      <td>0.658</td>
-      <td>0.6611</td>
-      <td>0.6651</td>
-      <td>0.6688</td>
-      <td>0.6725</td>
-      <td>0.6771</td>
-      <td>0.6809</td>
-      <td>0.6844</td>
+      <td>0.6571</td>
+      <td>0.6599</td>
+      <td>0.6636</td>
+      <td>0.667</td>
+      <td>0.6698</td>
+      <td>0.6745</td>
+      <td>0.6777</td>
+      <td>0.6807</td>
+      <td>0.6846</td>
+      <td>0.6893</td>
     </tr>
     <tr>
       <th>0.5</th>
-      <td>0.6878</td>
-      <td>0.6916</td>
-      <td>0.6951</td>
-      <td>0.6984</td>
+      <td>0.6922</td>
+      <td>0.6961</td>
+      <td>0.6995</td>
       <td>0.7015</td>
-      <td>0.705</td>
-      <td>0.7079</td>
-      <td>0.712</td>
-      <td>0.7162</td>
-      <td>0.7199</td>
+      <td>0.7054</td>
+      <td>0.7085</td>
+      <td>0.7117</td>
+      <td>0.7151</td>
+      <td>0.719</td>
+      <td>0.7235</td>
     </tr>
     <tr>
       <th>0.6</th>
-      <td>0.7228</td>
-      <td>0.7261</td>
-      <td>0.7298</td>
-      <td>0.7331</td>
-      <td>0.7364</td>
-      <td>0.7402</td>
-      <td>0.7433</td>
-      <td>0.7459</td>
-      <td>0.7484</td>
-      <td>0.751</td>
+      <td>0.7277</td>
+      <td>0.7312</td>
+      <td>0.7352</td>
+      <td>0.739</td>
+      <td>0.7414</td>
+      <td>0.7447</td>
+      <td>0.7476</td>
+      <td>0.7504</td>
+      <td>0.7536</td>
+      <td>0.756</td>
     </tr>
     <tr>
       <th>0.7</th>
-      <td>0.7538</td>
-      <td>0.758</td>
-      <td>0.7601</td>
-      <td>0.763</td>
-      <td>0.7658</td>
-      <td>0.7682</td>
-      <td>0.7723</td>
-      <td>0.7758</td>
-      <td>0.7792</td>
-      <td>0.7817</td>
+      <td>0.76</td>
+      <td>0.7627</td>
+      <td>0.7662</td>
+      <td>0.7686</td>
+      <td>0.7711</td>
+      <td>0.774</td>
+      <td>0.7774</td>
+      <td>0.7797</td>
+      <td>0.7825</td>
+      <td>0.7854</td>
     </tr>
     <tr>
       <th>0.8</th>
-      <td>0.7839</td>
-      <td>0.7878</td>
-      <td>0.7916</td>
-      <td>0.7949</td>
-      <td>0.7974</td>
-      <td>0.7998</td>
-      <td>0.8023</td>
-      <td>0.8054</td>
-      <td>0.8084</td>
-      <td>0.8112</td>
+      <td>0.7887</td>
+      <td>0.7911</td>
+      <td>0.7941</td>
+      <td>0.7966</td>
+      <td>0.7988</td>
+      <td>0.8016</td>
+      <td>0.8047</td>
+      <td>0.807</td>
+      <td>0.8097</td>
+      <td>0.8124</td>
     </tr>
     <tr>
       <th>0.9</th>
-      <td>0.8134</td>
-      <td>0.8153</td>
-      <td>0.8176</td>
-      <td>0.8206</td>
-      <td>0.8232</td>
-      <td>0.8256</td>
-      <td>0.8289</td>
-      <td>0.8319</td>
-      <td>0.8351</td>
-      <td>0.8372</td>
+      <td>0.8154</td>
+      <td>0.8175</td>
+      <td>0.8199</td>
+      <td>0.8229</td>
+      <td>0.8248</td>
+      <td>0.8275</td>
+      <td>0.8292</td>
+      <td>0.831</td>
+      <td>0.8339</td>
+      <td>0.8366</td>
     </tr>
   </tbody>
 </table>
@@ -466,6 +482,95 @@ remolcador con el petrolero. Contrástese si la distribución de dichos tiempos 
 normal (truncada), uniforme o exponencial y estímense los parámetros de la
 distribución correspondiente.
 
+
+```python
+# input data
+file= open('docs/data/E8.desplazamientos.txt')
+data_desplazamiento= np.loadtxt(file, unpack='true')
+file.close()
+```
+
+
+```python
+#  scipy.stats.kstest(rvs, cdf, args=(), N=20, alternative='two_sided', mode='approx', **kwds)
+# rvs --> test data; cdf --> distribution type，'norm'，'expon'，'rayleigh'，'gamma'；args=() distribution parametric
+# N: if vs is string，N is the size of sample
+# if p-value is bigger than the level of significance（5％），accept H0，The sample data can be considered to be from a given distribution F(x)
+loc, scale = norm.fit(data_desplazamiento)
+n = norm(loc=loc, scale=scale)
+stats.kstest(data_desplazamiento, n.cdf)
+```
+
+
+
+
+    KstestResult(statistic=0.01035501786004428, pvalue=0.6571586727422323)
+
+
+
+$D_{n}^{+}=\max(F_{n}(x)-F(x))$
+
+By the Glivenko–Cantelli theorem, if the sample comes from distribution F(x), then Dn converges to 0 almost surely in the limit when n goes to infinity.
+
+kstest(rvs, cdf, args=(), N=20, alternative=’two_sided’, mode=’approx’, **kwds)
+
+alternative：default as two-sided test，also can be ‘less’ o ‘greater’ for one-sided test
+
+https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.stats.kstest.html
+
+
+```python
+loc, scale = uniform.fit(data_desplazamiento)
+u = uniform(loc=loc, scale=scale)
+stats.kstest(data_desplazamiento, u.cdf)
+```
+
+
+
+
+    KstestResult(statistic=0.2177462278558, pvalue=2.43873358745901e-206)
+
+
+
+
+```python
+loc, scale = expon.fit(data_desplazamiento)
+ex = expon(loc=loc, scale=scale)
+stats.kstest(data_desplazamiento, ex.cdf)
+```
+
+
+
+
+    KstestResult(statistic=0.3581258415266688, pvalue=0.0)
+
+
+
+
+```python
+# method of moments --> estimate parametrics of a normal distribution
+mu = np.mean(data_desplazamiento)
+sigma = np.std(data_desplazamiento)
+print("Mu: " + str(mu))
+print("Sigma: " + str(sigma))
+```
+
+    Mu: 10.007615178514001
+    Sigma: 3.0373964893054275
+
+
+
+```python
+stats.anderson(data_desplazamiento, dist='expon')
+```
+
+
+
+
+    AndersonResult(statistic=1106.7655637247299, critical_values=array([0.922, 1.078, 1.341, 1.606, 1.957]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+
+
+
 Cuando el remolcador va de vacío (sin remolcar) la distribución es también 
 normal pero con media de 2 minutos y desviación típica 1. 
 
@@ -483,14 +588,442 @@ B. Analice la posibilidad de disponer de 3 nuevos remolcadores y
 realizar obras para disponer de 5 nuevos muelles ¿cuál de las dos 
 opciones es mejor?
 
+Una distribución de Poisson da la probabilidad de varios eventos en un intervalo generado por un proceso de Poisson. La distribución de Poisson se define mediante el parámetro de velocidad, λ, que es el número esperado de eventos en el intervalo (eventos / intervalo * duración del intervalo) y el número más alto de probabilidad de eventos. También podemos usar la Distribución de Poisson para encontrar el tiempo de espera entre eventos. Incluso si llegamos a un tiempo aleatorio, el tiempo de espera promedio siempre será el tiempo promedio entre eventos.
+
+
 
 ```python
+# Params
 
+LOG_FILE = 'ports.log'
+# Num of tugs available
+MAXTUGS = 10
+# Num of wharves available
+MAXWHARVES = 20
+# Max time
+T = 7 * 24 * 60 # 7 days
+TUG_MU_EMPTY = 2
+TUG_SIGMA_EMPTY = 1
+TUG_MU_FULL = mu
+TUG_SIGMA_FULL = sigma
+WHARVE_FREEDOM_DEGREE = 2
 ```
 
 
 ```python
+def minutesToTime(minutes):
+    hours = int(minutes / 60)
+    seconds = int( (minutes - int(minutes)) * 60)
+    minutes = int(minutes - hours * 60)
+    days = int(hours/24)
+    hours = hours - days*24
+    return str(days) + "d " + str(hours) + "h " + str(minutes) + "min " + str(seconds) + "s"
+```
 
+
+```python
+# Returns the poisson proccess rate
+# t: time in minutes along a month
+# As t could be any minute in a month, we need to get the t in minutes in the day
+
+def getPoissonRate(t):
+    lambd = 0
+    h_in_day = (t / 60.0) % 24.0
+    if h_in_day >= 0.0 and h_in_day < 5.0:
+        lambd = 2.0 / 5.0 * h_in_day + 5.0
+    elif h_in_day >= 5.0 and h_in_day < 8.0:
+        lambd = -1.0 / 3.0 * h_in_day + 26.0 / 3.0
+    elif h_in_day >= 8.0 and h_in_day < 15.0:
+        lambd = 3.0 / 7.0 * h_in_day + 18.0 / 7.0
+    elif h_in_day >= 15.0 and h_in_day < 17.0:
+        lambd = -3.0 / 2.0 * h_in_day + 63.0/2.0
+    elif h_in_day >= 17.0 and h_in_day < 24.0:
+        lambd = -1.0 / 7.0 * h_in_day + 59.0 / 7.0
+    else: 
+        logging.error("lambda out of index")
+    return lambd;
+
+# used for poisson distribution and exponential distribution
+    
+```
+
+
+```python
+#Enumeracion que contiene los tipos de eventos posibles
+class Events(Enum):  
+    TANK_ARRIVAL = 0 # Indica la entrada de un barco al puerto.
+    TANK_UNLOADED = 3 # Barco descargando
+    TUG_AT_WHARVE = 38 # Indica la llegada de un remolcador a los muelles.
+    TUG_AT_ENTRANCE = 58 # Indica la llegada de un remolcador a la entrada del puerto.
+
+# Clase para guardar una lista de eventos. Cada elemento es una tupla con
+# el momento en el que ocurre el evento y el tipo de evento.
+class ListEvents():
+    L = []
+    
+    def __init__( self ):
+        self.L = []
+    
+    # Para ordenar la lista con la funcion sorted(), devuelve el momento del evento
+    def comparator(self, value):
+        return value[0]
+    
+    # Returns the size of the list
+    def size(self):
+        return len(self.L)
+    
+    #Anade un evento a partir del momento y el tipo. Ademas ordena la
+    #lista para que los eventos queden en orden cronologico.
+    def add(self, time, event_type, tank_id = None):
+        #logging.info("New event arrived at events list: " + event_type.name + " :" + str(time))
+        self.L.append((time, event_type, tank_id))
+        self.L = sorted(self.L, key = self.comparator)
+    
+    #Saca y devuelve el primer elemento de la lista.
+    def pop_front(self):
+        event_time, event, tank_id = self.L[0]
+        #logging.info("Processing event: " + event.name + " :" + str(event_time))
+        self.L = self.L[1:]
+        return event_time, event, tank_id
+    
+    #Devuelvo el momento del evento con indice index.
+    def get_time( self, index ):
+        return self.L[index][0]
+    
+    #Devuelvo el tipo del evento con indice index.
+    def get_event_type( self, index ):
+        return self.L[index][1]
+```
+
+
+```python
+class ListTankers:
+    def __init__(self):
+        self.L = []
+        
+    def add(self, time_event):
+        tank = {
+            "id": len(self.L) + 1,
+            "arrival_time": time_event,
+            "entrance_pick_by_tug_time" : -1,
+            "wharve_arrival_time" : -1,
+            "wharve_unload_done_time" : -1,
+            "wharve_pick_by_tug_time" : -1,
+            "exit_time" : -1
+        }
+        self.L.append(tank)
+        return tank
+    
+    def get(self, tank_id):
+        for i in self.L:
+            if i["id"] == tank_id:
+                return i
+        return None
+```
+
+
+```python
+class ListTugs():
+    L = []
+    
+    def __init__( self, max_tugs ):
+        self.L = [None] * max_tugs
+        self.max_tugs = max_tugs
+    
+    # Para ordenar la lista con la funcion sorted(), devuelve el tiempo de fin de descarga
+    def comparator(self, value):
+        return value[0]
+    
+    #Anade un evento a partir del momento y el tipo. Ademas ordena la
+    #lista para que los eventos queden en orden cronologico.
+    def add(self, tank_id):
+        if self.size() >= self.max_tugs:
+            logging.error("Error: max size exceeded")
+            return None
+        for i, x in enumerate(self.L):
+            if x is None:
+                self.L[i] = tank_id
+                break
+        
+    def remove(self, tank_id):
+        for i, x in enumerate(self.L):
+            if x == tank_id:
+                self.L[i] = None
+                break
+    
+    def get_waiting_ids( self, time ):
+        return [x[0] for x in self.L if x[1]]
+    
+    def size(self):
+        return len(list(filter(lambda x: x is not None, self.L)))
+```
+
+
+```python
+#Clase con informacion sobre el contenido de los muelles. Cada elemento
+#contiene una id de barco y el tiempo de fin de descarga
+class ListWharves():
+    L = []
+    
+    def __init__( self, max_wharves ):
+        self.L = [None] * max_wharves
+        self.max_wharves = max_wharves
+    
+    # Para ordenar la lista con la funcion sorted(), devuelve el tiempo de fin de descarga
+    def comparator(self, value):
+        return value[0]
+    
+    #Anade un evento a partir del momento y el tipo. Ademas ordena la
+    #lista para que los eventos queden en orden cronologico.
+    def add(self, tank_id):
+        if self.size() >= self.max_wharves:
+            logging.error("Error: max size exceeded")
+            return None
+        for i, x in enumerate(self.L):
+            if x is None:
+                self.L[i] = tank_id
+                break
+        
+    def remove(self, tank_id):
+        for i, x in enumerate(self.L):
+            if x == tank_id:
+                self.L[i] = None
+                break
+    
+    def get_waiting_ids( self, time ):
+        return [x[0] for x in self.L if x[1]]
+    
+    def size(self):
+        return len(list(filter(lambda x: x is not None, self.L)))
+```
+
+
+```python
+# Clase para las simulaciones del ejecrcicio 2
+class Simulation:
+    def __init__(
+        self, 
+        tug_mu_empty = TUG_MU_EMPTY, 
+        tug_sigma_empty = TUG_SIGMA_EMPTY, 
+        tug_mu_full = TUG_MU_FULL, 
+        tug_sigma_full = TUG_SIGMA_FULL, 
+        wharve_freedom_degree = WHARVE_FREEDOM_DEGREE, 
+        max_tugs = MAXTUGS, 
+        max_wharves = MAXWHARVES,
+        max_time = T
+    ):
+        logging.info("Simulation parameters initialization ...")
+        
+        self.list_tankers = ListTankers()
+        self.tug_mu_empty = tug_mu_empty
+        self.tug_sigma_empty = tug_sigma_empty
+        self.tug_mu_full = tug_mu_full
+        self.tug_sigma_full = tug_sigma_full
+        self.wharve_freedom_degree = wharve_freedom_degree
+        
+        self.tankers_waiting_entrance = []
+        self.tankers_finished_unloading = []
+        self.tankers_exit = []
+        self.list_events = ListEvents()
+        self.tankers_tugs = ListTugs( max_tugs )
+        self.tankers_wharves = ListWharves( max_wharves )
+        
+        self.time = 0.0
+        self.max_time = max_time
+        
+        self.max_tugs = max_tugs
+        self.max_wharves = max_wharves
+        
+        # statistics
+        self.mean_time_to_dock = 0.0 # Tiempo medio que tarda un barco para llegar al muelle
+        self.max_time_to_dock = 0.0 # Tiempo maximo que tarda un barco para llegar al muelle
+        self.mean_tankers_docked = 0.0 # Numero medio de barcos en los muelles
+        self.mean_tankers_wait_at_entrance = 0.0 # Numero medio de barcos esperando en la entrada
+        self.max_tankers_wait_at_entrance = 0 # Numero maximo de barcos esperando en la entrada
+        
+        logging.info("Simulation parameters initialized")
+        
+    # Funcion para empezar la simulacion
+    def simulate(self):
+        logging.info("Simulation starting ...")
+        
+        # Calculamos la llegada del primer barco.
+        x = 60 * random.expovariate(getPoissonRate(self.time))
+        
+        # Si el primer barco llega despues del final de la simulacion,
+        # devuelve error
+        if x > self.max_time:
+            logging.error("No tankers arrived during simulation time. Ending...")
+            return -1
+        else:
+            # Add the first event (the first tank arrival)
+            self.list_events.add(self.time + x, Events.TANK_ARRIVAL)
+            # Bucle principal en el que se tratan eventos durante el
+            # tiempo de simulacion.
+            while self.list_events.size() > 0:
+                #Tomamos el proximo evento
+                time_event, event, tank_id =  self.list_events.pop_front()
+                
+                self.mean_tankers_docked += self.tankers_wharves.size() * (time_event - self.time)
+                self.mean_tankers_wait_at_entrance += len(self.tankers_waiting_entrance) * (time_event - self.time)
+                self.max_tankers_wait_at_entrance = max(len( self.tankers_waiting_entrance), self.max_tankers_wait_at_entrance)
+                
+                self.time = time_event
+                
+                # Llamamos a diferentes rutinas segun el tipo de evento
+                if event == Events.TANK_ARRIVAL:
+                    self.rutina_llegada_barco()
+                if event == Events.TANK_UNLOADED:
+                    self.rutina_muelle(tank_id)
+                if event == Events.TUG_AT_WHARVE:
+                    self.rutina_remolcador_muelle(tank_id)
+                if event == Events.TUG_AT_ENTRANCE:
+                    self.rutina_remolcador_entrada(tank_id)
+                    
+                self.proceso_remolcador()
+                    
+                logging.info("Tugs: " + str(self.tankers_tugs.L))
+                logging.info("Wharves: " + str(self.tankers_wharves.L))
+                logging.info("Waiting at entrance: " + str(self.tankers_waiting_entrance))
+                logging.info("Waiting at wharve: " + str(self.tankers_finished_unloading))
+                logging.info("Tankers finished: " + str(self.tankers_exit))
+
+            for i in self.list_tankers.L:
+                dock_time = i["wharve_arrival_time"] - i["arrival_time"]
+                self.max_time_to_dock = max(self.max_time_to_dock, dock_time)
+                self.mean_time_to_dock += dock_time
+
+            self.mean_time_to_dock /= len(self.list_tankers.L)
+            self.mean_tankers_docked /= self.time
+            self.mean_tankers_wait_at_entrance /= self.time
+            
+            logging.info("")
+            logging.info("mean_time_to_dock: " + str(self.mean_time_to_dock))
+            logging.info("max_time_to_dock: " + str(self.max_time_to_dock))
+            logging.info("mean_tankers_docked: " + str(self.mean_tankers_docked))
+            logging.info("mean_tankers_wait_at_entrance: " + str(self.mean_tankers_wait_at_entrance))
+            logging.info("max_tankers_wait_at_entrance: " + str(self.max_tankers_wait_at_entrance))
+            logging.info("")
+                    
+            return 0
+        
+    def proceso_remolcador(self):
+        y = random.normalvariate(self.tug_mu_empty, self.tug_sigma_empty)
+        yy = y + random.normalvariate(self.tug_mu_full, self.tug_sigma_full)
+            
+        if self.tankers_tugs.size() < self.max_tugs:
+            if len(self.tankers_waiting_entrance) > 0 and self.tankers_wharves.size() < self.max_wharves:
+                tank_id = self.tankers_waiting_entrance[0]
+                self.tankers_waiting_entrance = self.tankers_waiting_entrance[1:]
+                
+                tank = self.list_tankers.get(tank_id)
+                if tank is not None:
+                    self.tankers_tugs.add(tank["id"])
+                    self.tankers_wharves.add(tank["id"])
+                    self.list_events.add(self.time + y, Events.TUG_AT_WHARVE, tank["id"])
+                    
+                    logging.info("Tug tugging tanker " + str(tank["id"]) + " to wharve")
+                    
+                    tank["entrance_pick_by_tug_time"] = self.time + y
+            elif len(self.tankers_finished_unloading) > 0:
+                tank_id = self.tankers_finished_unloading[0]
+                self.tankers_finished_unloading = self.tankers_finished_unloading[1:]
+                
+                tank = self.list_tankers.get(tank_id)
+                if tank is not None:
+                    self.tankers_tugs.add(tank["id"])
+                    self.list_events.add(self.time + y, Events.TUG_AT_ENTRANCE, tank["id"])
+                    
+                    logging.info("Tug tugging tanker " + str(tank["id"]) + " to entrance")
+                    
+                    tank["wharve_pick_by_tug_time"] = self.time + y
+        
+    # Rutina para la llegada de un barco
+    def rutina_llegada_barco(self):
+        tank = self.list_tankers.add(self.time)
+        
+        logging.info(str(self.time) + " --- " + minutesToTime(self.time) + ": TANKER " + str(tank["id"]) + " arrived at port")
+        
+        # Generamos el momento de llegada del siguiente barco y lo
+        # anadimos a la lista de eventos si no hemos excedido el
+        # tiempo de simulacion
+        x = 60 * random.expovariate(getPoissonRate(self.time))
+        if self.time + x > self.max_time:
+            logging.info( "End of tanker arrivals." )
+        else:    
+            self.list_events.add(self.time + x, Events.TANK_ARRIVAL)
+            
+        # Anadimos el barco a la cola de entrada
+        self.tankers_waiting_entrance.append(tank["id"])
+        tank["arrival_time"] = self.time
+    
+    def rutina_muelle(self, tank_id):
+        tank = self.list_tankers.get(tank_id)
+        if tank is not None:
+            logging.info(str(self.time) + " --- " + minutesToTime(self.time) + ": TANKER " + str(tank["id"]) + " finished unloading")
+
+            self.tankers_wharves.remove(tank["id"])
+            self.tankers_finished_unloading.append(tank["id"])
+            tank["wharve_unload_done_time"] = self.time
+    
+    #Rutina para cuando un remolcador llega a la entrada
+    def rutina_remolcador_entrada(self, tank_id):
+        tank = self.list_tankers.get(tank_id)
+        if tank is not None:
+            logging.info(str(self.time) + " --- " + minutesToTime(self.time) + ": TANKER " + str(tank["id"]) + " back to sea")
+            self.tankers_tugs.remove(tank["id"])
+            self.tankers_exit.append(tank["id"])
+            tank["exit_time"] = self.time
+        
+    #Rutina para cuando llega un remolcador a los muelles
+    def rutina_remolcador_muelle( self, tank_id):
+        tank = self.list_tankers.get(tank_id)
+        if tank is not None:
+            logging.info(str(self.time) + " --- " + minutesToTime(self.time) + ": TANKER " + str(tank["id"]) + " arrived at wharve")
+            self.tankers_tugs.remove(tank["id"])
+            tank["wharve_arrival_time"] = self.time
+
+            z = 60 * np.random.chisquare(self.wharve_freedom_degree)
+            self.list_events.add(self.time + z, Events.TANK_UNLOADED, tank["id"])
+```
+
+
+```python
+def simulation(
+    log_file = "ports.log",
+    tug_mu_empty = TUG_MU_EMPTY, 
+    tug_sigma_empty = TUG_SIGMA_EMPTY, 
+    tug_mu_full = TUG_MU_FULL, 
+    tug_sigma_full = TUG_SIGMA_FULL, 
+    wharve_freedom_degree = WHARVE_FREEDOM_DEGREE, 
+    max_tugs = MAXTUGS, 
+    max_wharves = MAXWHARVES,
+    max_time = T
+):
+    # clear log
+    open(log_file, 'w').close()
+    # Setting up for a log file
+    logging.basicConfig(filename=log_file, level=logging.INFO)
+
+    simulation = Simulation(
+        tug_mu_empty = tug_mu_empty, 
+        tug_sigma_empty = tug_sigma_empty, 
+        tug_mu_full = tug_mu_full, 
+        tug_sigma_full = tug_sigma_full, 
+        wharve_freedom_degree = wharve_freedom_degree, 
+        max_tugs = max_tugs, 
+        max_wharves = max_wharves,
+        max_time = max_time
+    )
+    if simulation.simulate() == -1:
+        logging.error("Simulation failed")
+    else:
+        logging.info("Simulation success")
+        
+simulation("ports1020.log", max_tugs = 10, max_wharves = 20)
+simulation("ports1320.log", max_tugs = 13, max_wharves = 20)
+simulation("ports1025.log", max_tugs = 10, max_wharves = 25)
+simulation("ports1325.log", max_tugs = 13, max_wharves = 25)
 ```
 
 ### Referencia
