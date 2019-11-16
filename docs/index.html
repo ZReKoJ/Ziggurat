@@ -13225,7 +13225,7 @@ a.anchor-link {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>El <strong>algoritmo de Ziggurat</strong> es un método para generar valores aleatorios a partir de una función de densidad monótona decreciente, como la de la distribución exponencial. Sin embargo también se puede aplicar a distribuciones unimodales simétricas, como la distribución normal, generando un valor para la mitad decreciente de la función y  eligiendo aleatoriamente su signo.</p>
 <p>Su nombre proviene de unos templos construidos en la antigua Mesopotamia. Durante el algoritmo, se genera un conjunto de rectángulos "<em>apilados</em>" que recordaron a su autor a esta estructura.</p>
-<p><img src="images/output/ziggurat.png" width="300" height="300"></p>
+<p><img src="images/ziggurat.png" width="300" height="300"></p>
 
 </div>
 </div>
@@ -13237,7 +13237,7 @@ a.anchor-link {
 <blockquote><p>Primero, generamos puntos aleatorios dentro del rectángulo azul siguiendo una distribución uniforme y luego descartamos  todos los puntos que han quedado por encima de la curva de la distribución, es decir aquellos puntos ($x_{n}$, $y_{n}$) tales que $y_{n}$ &gt; $f(x)$, siendo $f(x)$ la función de distribución de la que queremos generar valores. Posteriormente tomamos la coordenada <em>x</em> de cada uno de los puntos restantes, obteniendo así los números.</p>
 </blockquote>
 <p>La eficiencia de este método suele ser baja porque muchos puntos generados acaban siendo descartados.</p>
-<p><img src="images/output/1.png" width="300" height="300"></p>
+<p><img src="images/1.png" width="300" height="300"></p>
 
 </div>
 </div>
@@ -13258,7 +13258,7 @@ a.anchor-link {
 <div class="text_cell_render border-box-sizing rendered_html">
 <blockquote><p>En la figura 2, se toma $n=8$, pero en la práctica n puede alcanzar 64, 128 o 256. Llamamos a la parte que se superpone al rectángulo superior en la dirección de la longitud región central del rectángulo actual. El rectángulo superior no tiene región central.</p>
 </blockquote>
-<p><img src="images/output/2.png" width="300" height="300"></p>
+<p><img src="images/2.png" width="300" height="300"></p>
 
 </div>
 </div>
