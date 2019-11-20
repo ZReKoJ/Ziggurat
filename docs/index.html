@@ -13225,7 +13225,7 @@ a.anchor-link {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>El <strong>algoritmo de Ziggurat</strong> es un método para generar valores aleatorios a partir de una función de densidad monótona decreciente</p>
 <ul>
-<li><p>Distribución exponencia</p>
+<li><p>Distribución exponencial</p>
 </li>
 <li><p>Distribución normal</p>
 </li>
@@ -13268,7 +13268,7 @@ La cola como los puntos bajo la curva con ordenada inferior a $f(z_{n-1})$.</p>
 </li>
 <li><p>Elegir <strong>uniformement</strong>e una de las regiones y aplicamos el <strong>método del rechazo</strong> en esa región.</p>
 </li>
-<li><p>Ejemplo: $n=8$ (en práctica n puede alcanzar 64, 128 o 256)</p>
+<li><p>Ejemplo: $n=6$ (en práctica n puede alcanzar 64, 128 o 256)</p>
 </li>
 <li><p><strong>Región central</strong> de un rectángulo: la parte que se superpone al rectángulo superior en la dirección de la longitud.
 El rectángulo superior no tiene región central.</p>
@@ -13317,7 +13317,7 @@ El rectángulo superior no tiene región central.</p>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Inicializaci&#243;n">Inicializaci&#243;n<a class="anchor-link" href="#Inicializaci&#243;n">&#182;</a></h3><ul>
-<li>Entrada: número de secciones n.</li>
+<li>Entrada: función de densidad $f$, número de secciones $n$.</li>
 <li>Calculamos por aproximación $z_n$.</li>
 <li>A partir de $z_n$ y el área común de las secciones, calculamos el resto de puntos $z_k$.</li>
 <li>Calculamos $\sigma_k = z_{k-1} / z_k$, que es la fracción del rectángulo k que está enteramente contenida en la curva. $\sigma_1 = 0$</li>
@@ -13373,9 +13373,9 @@ El rectángulo superior no tiene región central.</p>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li>En los casos en que el número caiga fuera de la porción central o en la cola de la distribución se requieren cálculos extra.</li>
-<li>Estos casos son menos probables cuanto mayor sea n.</li>
-<li>Para valores de n altos, estos casos son extremadamente raros (&lt; 3% para n = 128), por lo que el algoritmo es muy eficiente.</li>
+<li>En los casos en que el número caiga fuera de la porción central o en la sección de la cola se requieren cálculos adicionales.</li>
+<li>Estos casos son menos probables cuanto mayor sea $n$.</li>
+<li>Para valores de $n$ altos, estos casos son bastante raros, por lo que el algoritmo es muy eficiente.</li>
 </ul>
 
 </div>
@@ -13385,9 +13385,9 @@ El rectángulo superior no tiene región central.</p>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Comparaci&#243;n-con-otros-m&#233;todos">Comparaci&#243;n con otros m&#233;todos<a class="anchor-link" href="#Comparaci&#243;n-con-otros-m&#233;todos">&#182;</a></h3><ul>
-<li><p><strong>Método de rechazo</strong>: Es más simple pero puede ser muy ineficiente, ya que se pueden llegar a rechazar un gran número de puntos, y para cada uno de ellos hay que calcular $f(x)$, que suele ser costoso.</p>
+<li><p><strong>Método de rechazo</strong>: Es más simple pero puede ser muy ineficiente, ya que se pueden llegar a rechazar un gran número de puntos, y para cada uno de ellos hay que calcular $f(x)$, lo cual suele ser costoso.</p>
 </li>
-<li><p><strong>Método de inversión</strong>: El cálculo de la función inversa puede ser muy costoso, y la función a veces es no primaria.</p>
+<li><p><strong>Método de inversión</strong>: El cálculo de la función inversa puede ser muy costoso, al igual que evaluarla.</p>
 </li>
 <li><p><strong>Box-Muller</strong>: Es muy eficiente y ha sido utilizado durante mucho tiempo, pero requiere al menos el cálculo de un logaritmo y una raíz cuadrada para los valores generados.</p>
 </li>
@@ -14304,9 +14304,9 @@ El rectángulo superior no tiene región central.</p>
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Conclusi&#243;n">Conclusi&#243;n<a class="anchor-link" href="#Conclusi&#243;n">&#182;</a></h2><ul>
 <li>El algoritmo de Ziggurat es una mejora del método de rechazo.</li>
-<li>Es uno de los algoritmos de generación de distribuciones que mejor conserva el equilibrio entre eficiencia y aleatoriedad de los números generados.</li>
+<li>Es uno de los algoritmos de generación de distribuciones que mejor conserva el equilibrio entre eficiencia y calidad de los números generados.</li>
 <li>Requiere una inicialización que puede ser costosa, pero sólo se requiere hacer una vez por distribución.</li>
-<li>Sólo funciona con distribuciones estrictamente decrecientes en $[0,+\infty)$ o simétricas.</li>
+<li>Sólo funciona con funciones estrictamente decrecientes en $[0,+\infty)$ o simétricas.</li>
 </ul>
 
 </div>
